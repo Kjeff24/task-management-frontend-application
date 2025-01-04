@@ -4,16 +4,20 @@ import { environment } from '../../../environments/environment';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenResponse } from '../../models/token-reponse';
+import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
+import { CommonModule } from '@angular/common';
+import { TaskRequest } from '../../models/task';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
+  imports: [NewTaskModalComponent, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
   code = '';
+  isModalOpen = false;
 
   constructor(
     private tokenService: TokenService,
@@ -51,5 +55,16 @@ export class HomeComponent {
     })
   }
 
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  addTask(task: TaskRequest) {
+    console.log('Task added:', task);
+  }
 
 }

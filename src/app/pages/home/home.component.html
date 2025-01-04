@@ -4,8 +4,19 @@
       <h1 class="text-white font-bold text-lg">Task Management</h1>
     </div>
 
+    <div class="flex gap-2 cursor-pointer" (click)="openModal()">
+      <img src="../../../assets/svg/plus-circle-fill.svg" alt="plus-circle-fill" />
+      <h1 class="text-white font-bold">New Task</h1>
+    </div>
+
+    <app-new-task-modal 
+    *ngIf="isModalOpen" 
+    (close)="closeModal()" 
+    (save)="addTask($event)">
+  </app-new-task-modal>
+
     <form class="relative">
-        <input type="search" name="" id="" placeholder="Search by title or description" class="py-3 min-w-72 rounded-lg text-sm">
+        <input type="search" name="" id="" placeholder="Search by title or description" class="py-3 pl-2 min-w-72 rounded-lg text-sm">
         <button type="submit" class="absolute end-2.5 text-white px-4 m-1 py-2 bg-sky-800 hover:bg-blue-800 rounded-lg text-sm">Search</button>
     </form>
   </div>
