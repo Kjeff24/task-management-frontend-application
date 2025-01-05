@@ -24,21 +24,29 @@
     <div class="flex flex-col gap-2">
         <div class="flex items-center gap-2">
             <div class="rounded-full bg-3 w-3 h-3"></div>
-            <h2 class="text-white text-[12px]">TODO (<span>49</span>)</h2>
+            <h2 class="text-white text-[12px]">TODO (<span>{{ todoTasks.length }}</span>)</h2>
         </div>
-        <div class="task bg-2 mb-3"></div>
-        <div class="task bg-2 mb-3"></div>
-        <div class="task bg-2 mb-3"></div>
+        <div
+        *ngFor="let item of todoTasks">
+        <app-task-card
+        [menuItems]="todoMenuItems"
+        (menuItemClick)="handleMenuClick('TODO', $event)"
+        />
+        </div>
     </div>
 
     <div class="flex flex-col gap-2">
         <div class="flex items-center gap-2">
             <div class="rounded-full bg-pink-400 w-3 h-3"></div>
-            <h2 class="text-white text-[12px]">DONE (<span>49</span>)</h2>
+            <h2 class="text-white text-[12px]">DONE (<span>{{ completedTasks.length }}</span>)</h2>
         </div>
-        <div class="task bg-2 mb-3"></div>
-        <div class="task bg-2 mb-3"></div>
-        <div class="task bg-2 mb-3"></div>
+        <div
+        *ngFor="let item of completedTasks">
+        <app-task-card
+        [menuItems]="doneMenuItems"
+        (menuItemClick)="handleMenuClick('DONE', $event)"
+        />
+        </div>
     </div>
   </div>
 </div>
