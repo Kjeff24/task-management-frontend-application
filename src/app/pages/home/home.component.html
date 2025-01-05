@@ -30,6 +30,7 @@
         *ngFor="let item of todoTasks">
         <app-task-card
         [menuItems]="todoMenuItems"
+        [task]="item"
         (menuItemClick)="handleMenuClick('TODO', $event)"
         />
         </div>
@@ -44,6 +45,7 @@
         *ngFor="let item of completedTasks">
         <app-task-card
         [menuItems]="doneMenuItems"
+        [task]="item"
         (menuItemClick)="handleMenuClick('DONE', $event)"
         />
         </div>
