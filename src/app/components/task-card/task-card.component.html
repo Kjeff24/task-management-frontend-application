@@ -11,13 +11,27 @@
     >
       <ul class="py-2">
         <li
-          *ngFor="let item of menuItems"
+          *ngFor="let item of filteredMenuItems"
           class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
           (click)="onMenuItemClick(item)"
         >
           {{ item }}
         </li>
       </ul>
+    </div>
+    <div class="pt-6 px-2">
+      <p class="text-white font-16 mb-1">
+        Title:
+        <span class="text-sm">{{ task?.name }}</span>
+      </p>
+      <p class="text-white font-16 mb-1">
+        Description:
+        <span class="text-sm">{{ task?.description }}</span>
+      </p>
+      <p class="text-white font-16 mb-1">
+        Deadline:
+        <span class="text-sm">{{ task?.deadline }}</span>
+      </p>
     </div>
   </div>
 </div>
