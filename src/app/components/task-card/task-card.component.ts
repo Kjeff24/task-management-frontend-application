@@ -12,11 +12,20 @@ import { TaskResponse } from '../../models/task';
 export class TaskCardComponent {
   isMenuOpen = false;
   @Input() menuItems: string[] = [];
+  @Input() task: TaskResponse | null = null;
   @Output() menuItemClick = new EventEmitter<string>();
 
-  userRole: 'admin' | 'user' = 'admin';
+  filteredMenuItems: string[] = [];
+  userRole: 'admin' | 'user' = 'user';
 
-
+  ngOnInit(): void {
+    this.filteredMenuItems = this.menuItems.filter((item) => {
+      if (item === 'Edit' || item === 'Delete' || item === 'Assign To') {
+        return this.userRole === 'admin';
+      }
+      return true;
+    });
+  }
 
   toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
