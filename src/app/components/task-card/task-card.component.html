@@ -1,0 +1,37 @@
+<div class="task bg-2 mb-3">
+  <div class="relative cursor-pointer">
+    <img
+      src="../../../assets/svg/three-dots-vertical.svg"
+      class="absolute right-1 top-3"
+      (click)="toggleMenu($event)"
+    />
+    <div
+      *ngIf="isMenuOpen"
+      class="absolute right-1 top-10 bg-white border border-gray-300 shadow-lg rounded-md"
+    >
+      <ul class="py-2">
+        <li
+          *ngFor="let item of filteredMenuItems"
+          class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
+          (click)="onMenuItemClick(item)"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
+    <div class="pt-6 px-2">
+      <p class="text-white font-16 mb-1">
+        Title:
+        <span class="text-sm">{{ task?.name }}</span>
+      </p>
+      <p class="text-white font-16 mb-1">
+        Description:
+        <span class="text-sm">{{ task?.description }}</span>
+      </p>
+      <p class="text-white font-16 mb-1">
+        Deadline:
+        <span class="text-sm">{{ task?.deadline }}</span>
+      </p>
+    </div>
+  </div>
+</div>
