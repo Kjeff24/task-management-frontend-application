@@ -14,15 +14,23 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
   standalone: true,
   imports: [CommonModule, NewTaskModalComponent, TaskCardComponent],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
 export class HomeComponent {
   code = '';
-  isModalOpen = false;
-  todoMenuItems = ['Edit', 'Mark as Done', 'Add Comment', 'Assign To', 'Delete'];
+  isNewTaskModalOpen = false;
+  taskToUpdate: TaskResponse | null = null;
+  isTaskUpdate: boolean = false;
+  todoMenuItems = [
+    'Edit',
+    'Mark as Done',
+    'Add Comment',
+    'Assign To',
+    'Delete',
+  ];
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
-  todoTasks: TaskResponse[] = []
-  completedTasks: TaskResponse[] = []
+  todoTasks: TaskResponse[] = [];
+  completedTasks: TaskResponse[] = [];
 
   constructor(
     private tokenService: TokenService,
@@ -30,11 +38,10 @@ export class HomeComponent {
     private router: Router
   ) {}
 
-
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((data) => {
       this.code = data['code'];
-      if(this.code) {
+      if (this.code) {
         this.getToken(this.code);
       }
     });
@@ -49,7 +56,7 @@ export class HomeComponent {
         assignedTo: 'Alice',
         status: 'TODO',
         createdBy: 'John',
-        deadline: '2025-01-10',
+        deadline: '05 Jan 2025 14:30',
         completedAt: '',
         hasSentDeadlineNotification: 'false',
       },
@@ -61,7 +68,7 @@ export class HomeComponent {
         assignedTo: 'Bob',
         status: 'TODO',
         createdBy: 'Alice',
-        deadline: '2025-01-07',
+        deadline: '05 Jan 2025 14:30',
         completedAt: '',
         hasSentDeadlineNotification: 'true',
       },
@@ -76,8 +83,8 @@ export class HomeComponent {
         assignedTo: 'Alice',
         status: 'COMPLETED',
         createdBy: 'John',
-        deadline: '2024-12-31',
-        completedAt: '2025-01-02',
+        deadline: '05 Jan 2025 14:30',
+        completedAt: '05 Jan 2025 14:30',
         hasSentDeadlineNotification: 'false',
       },
       {
@@ -88,55 +95,62 @@ export class HomeComponent {
         assignedTo: 'Bob',
         status: 'COMPLETED',
         createdBy: 'Alice',
-        deadline: '2025-01-01',
-        completedAt: '2025-01-03',
+        deadline: '05 Jan 2025 14:30',
+        completedAt: '05 Jan 2025 14:30',
         hasSentDeadlineNotification: 'true',
       },
     ];
   }
 
-  login() : void {
+  login(): void {
     let params = new HttpParams()
       .set('response_type', environment.response_type)
       .set('client_id', environment.client_id)
-      .set('redirect_uri', environment.redirect_uri)
+      .set('redirect_uri', environment.redirect_uri);
 
-    location.href = environment.login_endpoint + '?' + params
+    location.href = environment.login_endpoint + '?' + params;
   }
-  
+
   getToken(code: string): void {
     this.tokenService.getToken(this.code).subscribe({
       next: (data: TokenResponse) => {
-        this.tokenService.setTokens(data.id_token)
+        this.tokenService.setTokens(data.id_token);
       },
       error: (err) => {
         console.log(err);
       },
-    })
+    });
   }
 
-  openModal() {
-    this.isModalOpen = true;
+  openNewTaskModal() {
+    this.isNewTaskModalOpen = true;
   }
 
   closeModal() {
-    this.isModalOpen = false;
+    this.isNewTaskModalOpen = false;
   }
 
   addTask(task: TaskRequest) {
     console.log('Task added:', task);
   }
 
-  handleMenuClick(section: 'TODO' | 'DONE', item: string): void {
+  handleMenuClick(
+    section: 'TODO' | 'DONE',
+    event: { item: string; task: TaskResponse | null }
+  ): void {
     if (section === 'TODO') {
-      if (item === 'Mark as Done') {
+      if (event.item === 'Mark as Done') {
         console.log('Marking item as done...');
       }
+      if (event.item === 'Edit') {
+        this.openNewTaskModal();
+        this.taskToUpdate = event.task;
+        this.isTaskUpdate = true;
+      }
     } else if (section === 'DONE') {
-      if (item === 'Restore to TODO') {
+      if (event.item === 'Restore to TODO') {
         console.log('Restoring item to TODO...');
       }
     }
   }
-
 }

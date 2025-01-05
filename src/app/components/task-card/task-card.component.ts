@@ -13,10 +13,10 @@ export class TaskCardComponent {
   isMenuOpen = false;
   @Input() menuItems: string[] = [];
   @Input() task: TaskResponse | null = null;
-  @Output() menuItemClick = new EventEmitter<string>();
+  @Output() menuItemClick = new EventEmitter<{ item: string, task: TaskResponse | null }>();
 
   filteredMenuItems: string[] = [];
-  userRole: 'admin' | 'user' = 'user';
+  userRole: 'admin' | 'user' = 'admin';
 
   ngOnInit(): void {
     this.filteredMenuItems = this.menuItems.filter((item) => {
@@ -38,7 +38,7 @@ export class TaskCardComponent {
   }
 
   onMenuItemClick(item: string): void {
-    this.menuItemClick.emit(item);
+    this.menuItemClick.emit({ item, task: this.task });
     this.isMenuOpen = false;
   }
 }
