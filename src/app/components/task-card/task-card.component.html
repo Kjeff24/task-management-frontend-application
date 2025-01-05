@@ -1,0 +1,23 @@
+<div class="task bg-2 mb-3">
+  <div class="relative cursor-pointer">
+    <img
+      src="../../../assets/svg/three-dots-vertical.svg"
+      class="absolute right-1 top-3"
+      (click)="toggleMenu($event)"
+    />
+    <div
+      *ngIf="isMenuOpen"
+      class="absolute right-1 top-10 bg-white border border-gray-300 shadow-lg rounded-md"
+    >
+      <ul class="py-2">
+        <li
+          *ngFor="let item of menuItems"
+          class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
+          (click)="onMenuItemClick(item)"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
