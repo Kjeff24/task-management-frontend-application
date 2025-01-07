@@ -9,6 +9,9 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class TaskService {
+  
+  gateway_url = environment.api_gateway;
+
   constructor(
     private httpClient: HttpClient,
     private tokenService: TokenService
@@ -17,36 +20,36 @@ export class TaskService {
   public createTask(task: TaskRequest): Observable<Task> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.post<Task>(environment.api_gateway + '/tasks', task, { headers });
+    return this.httpClient.post<Task>(this.gateway_url + '/tasks', task, { headers });
   }
 
   public getAllTaskByUser(): Observable<TaskResponse> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.get<TaskResponse>(environment.api_gateway + '/tasks/user', { headers });
+    return this.httpClient.get<TaskResponse>(this.gateway_url + '/tasks/user', { headers });
   }
   
   public getAllCreatedTasks(): Observable<TaskResponse> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.get<TaskResponse>(environment.api_gateway + '/tasks', { headers });
+    return this.httpClient.get<TaskResponse>(this.gateway_url + '/tasks', { headers });
   }
 
   public updateTask(task: TaskRequest, taskId: string): Observable<Task> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.put<Task>(environment.api_gateway + `/tasks/update/${taskId}`, task, { headers });
+    return this.httpClient.put<Task>(this.gateway_url + `/tasks/update/${taskId}`, task, { headers });
   }
 
   public addUserComment(task: TaskCommentRequest): Observable<Task> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.put<Task>(environment.api_gateway + '/tasks/comment', task, { headers });
+    return this.httpClient.put<Task>(this.gateway_url + '/tasks/comment', task, { headers });
   }
 
   public changeTaskStatus(task: TaskUpdateStatusRequest): Observable<Task> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.put<Task>(environment.api_gateway + '/tasks/comment', task, { headers });
+    return this.httpClient.put<Task>(this.gateway_url + '/tasks/comment', task, { headers });
   }
 }
