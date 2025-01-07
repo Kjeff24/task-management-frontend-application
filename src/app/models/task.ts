@@ -1,11 +1,4 @@
-export interface TaskRequest {
-  name: string;
-  description: string;
-  assignedTo: string;
-  deadline: Date;
-}
-
-export interface TaskResponse {
+export interface Task {
   taskId: string;
   name: string;
   description: string;
@@ -16,6 +9,18 @@ export interface TaskResponse {
   deadline: string;
   completedAt: string;
   hasSentDeadlineNotification: string;
+}
+
+export interface TaskRequest {
+  name: string;
+  description: string;
+  assignedTo: string;
+  deadline: Date;
+}
+
+export interface TaskResponse {
+  open: Task[],
+  completed: Task[]
 }
 
 export interface TaskUpdateAssignedToRequest {
