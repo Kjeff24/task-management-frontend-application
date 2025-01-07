@@ -7,5 +7,6 @@ export const environment = {
     client_secret: '',
     redirect_uri: 'http://localhost:4200',
     response_type: 'code',
-    adminGroup: 'apiadmins'
+    adminGroup: 'apiadmins',
+    api_gateway: ''
 }
