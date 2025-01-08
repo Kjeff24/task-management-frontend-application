@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TokenService } from '../../services/token/token.service';
 import { environment } from '../../../environments/environment';
-import { HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenResponse } from '../../models/token-reponse';
 import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
@@ -18,14 +18,6 @@ import { TaskService } from '../../services/task-service/task.service';
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
-  
-  constructor(
-    private tokenService: TokenService,
-    private activatedRoute: ActivatedRoute,
-    private taskService: TaskService,
-    private router: Router
-  ) {}
-
   code = '';
   isNewTaskModalOpen = false;
   taskToUpdate: Task | null = null;
@@ -42,6 +34,12 @@ export class HomeComponent {
   completedTasks: Task[] = [];
   isAdmin: boolean = false;
 
+  constructor(
+    private tokenService: TokenService,
+    private activatedRoute: ActivatedRoute,
+    private taskService: TaskService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((data) => {
@@ -102,13 +100,45 @@ export class HomeComponent {
     this.isNewTaskModalOpen = false;
   }
 
-  addTask(task: TaskRequest) {
-    console.log('Task added:', task);
+  saveTask(event: { task: TaskRequest, taskId: string }) {
+    if(this.isTaskUpdate) {
+      this.updateTask(event.task, event.taskId);
+    } else {
+      this.createTask(event.task);
+    }
+    
+  }
+
+  createTask(taskRequest: TaskRequest): void {
+    this.taskService.createTask(taskRequest).subscribe({
+      next : (task: Task) => {
+        this.todoTasks.push(task)
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error)
+      }
+    });
+  }
+
+  updateTask(taskRequest: TaskRequest, taskId: string): void {
+    this.taskService.updateTask(taskRequest, taskId).subscribe({
+      next : (task: Task) => {
+        this.todoTasks = this.todoTasks.map((t) => {
+          if(t.taskId === task.taskId) {
+            return task;
+          }
+          return t;
+        })
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error)
+      }
+    });
   }
 
   handleMenuClick(
     section: 'TODO' | 'DONE',
-    event: { item: string; task: Task | null }
+    event: { item: string; task: Task | null}
   ): void {
     if (section === 'TODO') {
       if (event.item === 'Mark as Done') {
