@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { TaskResponse } from '../../models/task';
+import { Task, TaskResponse } from '../../models/task';
 
 @Component({
   selector: 'app-task-card',
@@ -12,8 +12,8 @@ import { TaskResponse } from '../../models/task';
 export class TaskCardComponent {
   isMenuOpen = false;
   @Input() menuItems: string[] = [];
-  @Input() task: TaskResponse | null = null;
-  @Output() menuItemClick = new EventEmitter<{ item: string, task: TaskResponse | null }>();
+  @Input() task: Task | null = null;
+  @Output() menuItemClick = new EventEmitter<{ item: string, task: Task | null }>();
 
   filteredMenuItems: string[] = [];
   userRole: 'admin' | 'user' = 'admin';
