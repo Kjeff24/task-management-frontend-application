@@ -25,7 +25,7 @@ export class TaskCardComponent {
   ngOnInit(): void {
     this.isAdmin = this.tokenService.getPayload()?.isAdmin ?? false;
     this.filteredMenuItems = this.menuItems.filter((item) => {
-      if (item === 'Edit' || item === 'Delete' || item === 'Assign To') {
+      if (item === 'Edit' || item === 'Delete' || item === 'Assign To' || item === 'Restore to TODO') {
         return this.isAdmin;
       }
       return true;
