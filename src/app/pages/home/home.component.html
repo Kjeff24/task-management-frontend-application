@@ -36,6 +36,12 @@
     (save)="saveUser($event)"
     />
 
+    <app-add-comment
+    *ngIf="isCommentModalOpen"
+    (close)="commentModalToggle()"
+    (save)="saveComment($event)"
+    />
+
     <form class="relative">
       <input
         type="search"

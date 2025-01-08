@@ -37,3 +37,7 @@ export interface TaskCommentRequest {
   taskId: string;
   comment: string;
 }
+
+export interface CommentRequest {
+  comment: string;
+}

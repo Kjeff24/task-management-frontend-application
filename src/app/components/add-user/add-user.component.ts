@@ -1,6 +1,11 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserRequest } from '../../models/user';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.css'
+  styleUrl: './add-user.component.css',
 })
 export class AddUserComponent {
   @Output() close = new EventEmitter<void>();
@@ -19,8 +24,8 @@ export class AddUserComponent {
   constructor(private fb: FormBuilder) {
     this.userForm = this.fb.group({
       email: ['', [Validators.required]],
-      fullName: ['', [Validators.required]]
-    })
+      fullName: ['', [Validators.required]],
+    });
   }
 
   closeModal() {
@@ -28,11 +33,10 @@ export class AddUserComponent {
   }
 
   onSubmit() {
-      if (this.userForm.valid) {
-        const userRequest: UserRequest = this.userForm.value;
-        this.save.emit(userRequest);
-        this.closeModal();
-      }
+    if (this.userForm.valid) {
+      const userRequest: UserRequest = this.userForm.value;
+      this.save.emit(userRequest);
+      this.closeModal();
     }
-
+  }
 }
