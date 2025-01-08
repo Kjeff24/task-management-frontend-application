@@ -10,6 +10,9 @@ import {
 import { TaskService } from '../../services/task-service/task.service';
 import { Task, TaskRequest, TaskResponse } from '../../models/task';
 import { convertDateToISOFormat } from '../../utils/date-utils';
+import { UserService } from '../../services/user-service/user.service';
+import { MessageResponse } from '../../models/message';
+import { UserResponse } from '../../models/user';
 
 @Component({
   selector: 'app-new-task-modal',
@@ -22,6 +25,7 @@ import { convertDateToISOFormat } from '../../utils/date-utils';
 export class NewTaskModalComponent {
   @Input() task: Task | null = null;
   @Input() isTaskUpdate: boolean = false;
+  @Input() users: UserResponse[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<{
     task: TaskRequest;
@@ -32,7 +36,6 @@ export class NewTaskModalComponent {
 
   constructor(
     private fb: FormBuilder,
-    private taskService: TaskService,
     private datePipe: DatePipe
   ) {
     this.taskForm = this.fb.group({
@@ -68,4 +71,5 @@ export class NewTaskModalComponent {
       this.closeModal();
     }
   }
+
 }

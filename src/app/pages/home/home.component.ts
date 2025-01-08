@@ -10,6 +10,8 @@ import { Task, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { TaskService } from '../../services/task-service/task.service';
 import { MessageResponse } from '../../models/message';
+import { UserService } from '../../services/user-service/user.service';
+import { UserResponse } from '../../models/user';
 
 @Component({
   selector: 'app-home',
@@ -34,11 +36,13 @@ export class HomeComponent {
   todoTasks: Task[] = [];
   completedTasks: Task[] = [];
   isAdmin: boolean = false;
+  users: UserResponse[] = [];
 
   constructor(
     private tokenService: TokenService,
     private activatedRoute: ActivatedRoute,
     private taskService: TaskService,
+    private userService: UserService,
     private router: Router
   ) {}
 
@@ -52,6 +56,7 @@ export class HomeComponent {
       } else {
         this.isAdmin = this.tokenService.getPayload()?.isAdmin ?? false;
         this.getAllTask();
+        this.getUsers();
       }
     });
   }
@@ -185,6 +190,18 @@ export class HomeComponent {
       error: (err: MessageResponse) => {
         console.log(err.message);
       },
+    })
+  }
+
+  getUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (users: UserResponse[]) => {
+        this.users = users;
+        console.log(this.users)
+      },
+      error: (error: MessageResponse) => {
+        console.error(error.message);
+      }
     })
   }
 }

@@ -35,16 +35,19 @@
         <!-- Assigned To Field -->
         <div>
           <label for="assignedTo" class="block text-sm font-medium text-gray-300 mb-1">Assigned To</label>
-          <input
+          <select
             id="assignedTo"
             formControlName="assignedTo"
-            type="text"
             class="w-full p-3 rounded-lg border border-gray-600 bg-1 text-white focus:ring focus:ring-blue-500 focus:border-blue-500"
-          />
+          >
+            <option value="" disabled>Select a user</option>
+            <option *ngFor="let user of users" [value]="user.email">{{ user.fullName }}</option>
+          </select>
           <div *ngIf="taskForm.get('assignedTo')?.invalid && taskForm.get('assignedTo')?.touched">
             <small class="text-red-500 text-sm">Assigned To is required</small>
           </div>
         </div>
+        
   
         <!-- Deadline Field -->
         <div>
