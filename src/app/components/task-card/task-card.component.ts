@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { Task, TaskResponse } from '../../models/task';
+import { TokenService } from '../../services/token/token.service';
 
 @Component({
   selector: 'app-task-card',
@@ -16,12 +17,14 @@ export class TaskCardComponent {
   @Output() menuItemClick = new EventEmitter<{ item: string, task: Task | null }>();
 
   filteredMenuItems: string[] = [];
-  userRole: 'admin' | 'user' = 'admin';
+  isAdmin: boolean = false;
+
+  constructor(private tokenService: TokenService){}
 
   ngOnInit(): void {
     this.filteredMenuItems = this.menuItems.filter((item) => {
       if (item === 'Edit' || item === 'Delete' || item === 'Assign To') {
-        return this.userRole === 'admin';
+        return this.tokenService.getPayload()?.isAdmin;
       }
       return true;
     });
