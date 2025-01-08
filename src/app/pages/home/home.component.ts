@@ -1,23 +1,23 @@
-import { Component } from '@angular/core';
-import { TokenService } from '../../services/token/token.service';
-import { environment } from '../../../environments/environment';
-import { HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TokenResponse } from '../../models/token-reponse';
-import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 import { CommonModule } from '@angular/common';
-import { Task, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../models/task';
-import { TaskCardComponent } from '../../components/task-card/task-card.component';
-import { TaskService } from '../../services/task-service/task.service';
-import { MessageResponse } from '../../models/message';
-import { UserService } from '../../services/user-service/user.service';
-import { UserRequest, UserResponse } from '../../models/user';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AddCommentComponent } from "../../components/add-comment/add-comment.component";
 import { AddUserComponent } from '../../components/add-user/add-user.component';
+import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
+import { TaskCardComponent } from '../../components/task-card/task-card.component';
+import { MessageResponse } from '../../models/message';
+import { CommentRequest, Task, TaskCommentRequest, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../models/task';
+import { TokenResponse } from '../../models/token-reponse';
+import { UserRequest, UserResponse } from '../../models/user';
+import { TaskService } from '../../services/task-service/task.service';
+import { TokenService } from '../../services/token/token.service';
+import { UserService } from '../../services/user-service/user.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, NewTaskModalComponent, TaskCardComponent, AddUserComponent],
+  imports: [CommonModule, NewTaskModalComponent, TaskCardComponent, AddUserComponent, AddUserComponent, AddCommentComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
@@ -25,6 +25,7 @@ export class HomeComponent {
   code = '';
   isNewTaskModalOpen = false;
   isAddUserModalOpen = false;
+  isCommentModalOpen = false;
   taskToUpdate: Task | null = null;
   isTaskUpdate: boolean = false;
   todoMenuItems = [
@@ -39,6 +40,7 @@ export class HomeComponent {
   completedTasks: Task[] = [];
   isAdmin: boolean = false;
   users: UserResponse[] = [];
+  taskIdComment: string = '';
 
   constructor(
     private tokenService: TokenService,
@@ -70,15 +72,22 @@ export class HomeComponent {
     this.isNewTaskModalOpen = !this.isNewTaskModalOpen;
   }
 
+  commentModalToggle() {
+    this.isCommentModalOpen = !this.isCommentModalOpen;
+  }
+
   handleMenuClick(
     section: 'TODO' | 'DONE',
     event: { item: string; task: Task | null }
   ): void {
-    if (section === 'TODO') {
-      if (event.item === 'Mark as Done') {
-        if (event.task) {
+    if (section === 'DONE' || section === 'TODO'){
+      if (event.item === 'Add Comment' && event.task) {
+          this.commentModalToggle();
+          this.taskIdComment = event.task.taskId;
+      }
+    } else if (section === 'TODO') {
+      if (event.item === 'Mark as Done' && event.task) {
           this.markTaskAsDone(event.task?.taskId, 'completed')
-        }
       }
       if (event.item === 'Edit') {
         this.newTaskModalToggle();
@@ -86,10 +95,8 @@ export class HomeComponent {
         this.isTaskUpdate = true;
       }
     } else if (section === 'DONE') {
-      if (event.item === 'Restore to TODO') {
-        if (event.task) {
+      if (event.item === 'Restore to TODO' && event.task) {
           this.markTaskAsDone(event.task?.taskId, 'open')
-        }
       }
     }
   }
@@ -111,6 +118,29 @@ export class HomeComponent {
         console.log(error.message)
       }
     })
+  }
+
+  saveComment(commentRequest: CommentRequest){
+    const comment: TaskCommentRequest = {
+      taskId: this.taskIdComment,
+      comment: commentRequest.comment
+    }
+    this.taskService.addUserComment(comment).subscribe({
+      next: (task: Task) => {
+        this.updateTaskInLists(task);
+      },
+      error: (error: MessageResponse) => {
+        console.log(error.message)
+      }
+    })
+  }
+
+  private updateTaskInLists(updatedTask: Task): void {
+    const updateTask = (tasks: Task[]) =>
+      tasks.map(task => task.taskId === updatedTask.taskId ? updatedTask : task);
+    
+    this.todoTasks = updateTask(this.todoTasks);
+    this.completedTasks = updateTask(this.completedTasks);
   }
 
   getToken(code: string): void {
@@ -148,12 +178,7 @@ export class HomeComponent {
   updateTask(taskRequest: TaskRequest, taskId: string): void {
     this.taskService.updateTask(taskRequest, taskId).subscribe({
       next: (task: Task) => {
-        this.todoTasks = this.todoTasks.map((t) => {
-          if (t.taskId === task.taskId) {
-            return task;
-          }
-          return t;
-        });
+        this.todoTasks = this.todoTasks.map(t => t.taskId === task.taskId ? task : t);
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
