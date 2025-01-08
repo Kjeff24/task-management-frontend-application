@@ -68,7 +68,6 @@ export class TokenService {
       const decodedPayload = atob(payload);
       const values = JSON.parse(decodedPayload);
       const isAdmin = values['cognito:groups'] && values['cognito:groups'].includes('apiAdmins');
-      console.log('isAdmin: ', isAdmin)
       return {
         email: values.email,
         sub: values.sub,
