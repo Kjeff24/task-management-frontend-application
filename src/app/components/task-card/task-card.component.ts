@@ -14,6 +14,7 @@ export class TaskCardComponent {
   isMenuOpen = false;
   @Input() menuItems: string[] = [];
   @Input() task: Task | null = null;
+  @Input() cardType: string = '';
   @Output() menuItemClick = new EventEmitter<{ item: string, task: Task | null }>();
 
   filteredMenuItems: string[] = [];
@@ -22,9 +23,10 @@ export class TaskCardComponent {
   constructor(private tokenService: TokenService){}
 
   ngOnInit(): void {
+    this.isAdmin = this.tokenService.getPayload()?.isAdmin ?? false;
     this.filteredMenuItems = this.menuItems.filter((item) => {
       if (item === 'Edit' || item === 'Delete' || item === 'Assign To') {
-        return this.tokenService.getPayload()?.isAdmin;
+        return this.isAdmin;
       }
       return true;
     });
