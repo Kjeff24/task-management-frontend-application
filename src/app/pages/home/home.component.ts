@@ -58,7 +58,6 @@ export class HomeComponent {
       } else {
         this.isAdmin = this.tokenService.getPayload()?.isAdmin ?? false;
         this.getAllTask();
-        this.getUsers();
       }
     });
   }
@@ -129,6 +128,7 @@ export class HomeComponent {
   getAllTask(): void {
     if (this.isAdmin) {
       this.getAllCreatedTask();
+      this.getUsers();
     } else {
       this.getTaskByUser();
     }
