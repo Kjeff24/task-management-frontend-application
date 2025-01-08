@@ -4,7 +4,7 @@
       <h1 class="text-white font-bold text-lg">Task Management</h1>
     </div>
 
-    <div class="flex gap-2 cursor-pointer" (click)="openNewTaskModal()">
+    <div *ngIf="isAdmin" class="flex gap-2 cursor-pointer" (click)="openNewTaskModal()">
       <img
         src="../../../assets/svg/plus-circle-fill.svg"
         alt="plus-circle-fill"

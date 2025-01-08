@@ -14,6 +14,15 @@ export class TokenService {
 
   constructor(private httpClient: HttpClient) {}
 
+  login(): void {
+    let params = new HttpParams()
+      .set('response_type', environment.response_type)
+      .set('client_id', environment.client_id)
+      .set('redirect_uri', environment.redirect_uri);
+
+    location.href = environment.login_endpoint + '?' + params;
+  }
+
   public getToken(code: string): Observable<TokenResponse> {
     let body = new HttpParams()
       .set('grant_type', environment.grant_type)
