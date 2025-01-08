@@ -8,6 +8,7 @@ import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-
 import { CommonModule } from '@angular/common';
 import { Task, TaskRequest, TaskResponse } from '../../models/task';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
+import { TaskService } from '../../services/task-service/task.service';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,14 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
+  
+  constructor(
+    private tokenService: TokenService,
+    private activatedRoute: ActivatedRoute,
+    private taskService: TaskService,
+    private router: Router
+  ) {}
+
   code = '';
   isNewTaskModalOpen = false;
   taskToUpdate: Task | null = null;
@@ -31,95 +40,58 @@ export class HomeComponent {
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
   todoTasks: Task[] = [];
   completedTasks: Task[] = [];
+  isAdmin: boolean = false;
 
-  constructor(
-    private tokenService: TokenService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((data) => {
       this.code = data['code'];
       if (this.code) {
         this.getToken(this.code);
+      } else if (!this.tokenService.isLoggedIn()) {
+        this.tokenService.login();
+      } else {
+        this.isAdmin = this.tokenService.getPayload()?.isAdmin ?? false;
+        this.getAllTask();
       }
     });
-
-    // Test Data: Remove after getting response from api
-    this.todoTasks = [
-      {
-        taskId: '1',
-        name: 'Design Landing Page',
-        description: 'Create a responsive design for the landing page.',
-        userComment: 'Need it done by Friday.',
-        assignedTo: 'Alice',
-        status: 'TODO',
-        createdBy: 'John',
-        deadline: '05 Jan 2025 14:30',
-        completedAt: '',
-        hasSentDeadlineNotification: 'false',
-      },
-      {
-        taskId: '2',
-        name: 'Fix Login Bug',
-        description: 'Resolve issue with user login API.',
-        userComment: 'Critical bug affecting production.',
-        assignedTo: 'Bob',
-        status: 'TODO',
-        createdBy: 'Alice',
-        deadline: '05 Jan 2025 14:30',
-        completedAt: '',
-        hasSentDeadlineNotification: 'true',
-      },
-    ];
-
-    this.completedTasks = [
-      {
-        taskId: '3',
-        name: 'Setup Database',
-        description: 'Configure database for the project.',
-        userComment: '',
-        assignedTo: 'Alice',
-        status: 'COMPLETED',
-        createdBy: 'John',
-        deadline: '05 Jan 2025 14:30',
-        completedAt: '05 Jan 2025 14:30',
-        hasSentDeadlineNotification: 'false',
-      },
-      {
-        taskId: '4',
-        name: 'Deploy Backend',
-        description: 'Deploy backend services to AWS.',
-        userComment: 'Deployed successfully.',
-        assignedTo: 'Bob',
-        status: 'COMPLETED',
-        createdBy: 'Alice',
-        deadline: '05 Jan 2025 14:30',
-        completedAt: '05 Jan 2025 14:30',
-        hasSentDeadlineNotification: 'true',
-      },
-    ];
-  }
-
-  login(): void {
-    let params = new HttpParams()
-      .set('response_type', environment.response_type)
-      .set('client_id', environment.client_id)
-      .set('redirect_uri', environment.redirect_uri);
-
-    location.href = environment.login_endpoint + '?' + params;
   }
 
   getToken(code: string): void {
     this.tokenService.getToken(this.code).subscribe({
       next: (data: TokenResponse) => {
         this.tokenService.setTokens(data.id_token);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.log(err);
       },
     });
+  }
+
+  getAllTask(): void {
+    if(this.isAdmin) {
+      this.taskService.getAllCreatedTasks().subscribe({
+        next: (data: TaskResponse) => {
+          this.todoTasks = data.open
+          this.completedTasks = data.completed
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      })
+    } else {
+      this.taskService.getAllTaskByUser().subscribe({
+        next: (data: TaskResponse) => {
+          this.todoTasks = data.open
+          this.completedTasks = data.completed
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      })
+    }
+    
   }
 
   openNewTaskModal() {
