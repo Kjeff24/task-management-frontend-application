@@ -2,7 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../../services/task-service/task.service';
-import { TaskRequest, TaskResponse } from '../../models/task';
+import { Task, TaskRequest, TaskResponse } from '../../models/task';
 import { HttpErrorResponse } from '@angular/common/http';
 import { convertDateToISOFormat } from '../../utils/date-utils';
 
@@ -15,11 +15,12 @@ import { convertDateToISOFormat } from '../../utils/date-utils';
   providers: [DatePipe],
 })
 export class NewTaskModalComponent {
-  @Input() task: TaskResponse | null = null;
+  @Input() task: Task | null = null;
   @Input() isTaskUpdate: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<TaskRequest>();
   taskForm: FormGroup;
+  taskId: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -40,6 +41,7 @@ export class NewTaskModalComponent {
         ...this.task,
         deadline: convertedDeadline,
       });
+      this.taskId = this.task.taskId;
     }
   }
 
@@ -62,7 +64,7 @@ export class NewTaskModalComponent {
 
   createTask(taskRequest: TaskRequest): void {
     this.taskService.createTask(taskRequest).subscribe({
-      next : (task: TaskResponse) => {
+      next : (task: Task) => {
         console.log('Task created successfully:', task);
         this.save.emit(taskRequest);
         this.closeModal();
@@ -74,8 +76,8 @@ export class NewTaskModalComponent {
   }
 
   updateTask(taskRequest: TaskRequest): void {
-    this.taskService.updateTask(taskRequest).subscribe({
-      next : (task: TaskResponse) => {
+    this.taskService.updateTask(taskRequest, this.taskId).subscribe({
+      next : (task: Task) => {
         console.log('Task created successfully:', task);
         this.save.emit(taskRequest);
         this.closeModal();

@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TokenResponse } from '../../models/token-reponse';
 import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 import { CommonModule } from '@angular/common';
-import { TaskRequest, TaskResponse } from '../../models/task';
+import { Task, TaskRequest, TaskResponse } from '../../models/task';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 
 @Component({
@@ -19,7 +19,7 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
 export class HomeComponent {
   code = '';
   isNewTaskModalOpen = false;
-  taskToUpdate: TaskResponse | null = null;
+  taskToUpdate: Task | null = null;
   isTaskUpdate: boolean = false;
   todoMenuItems = [
     'Edit',
@@ -29,8 +29,8 @@ export class HomeComponent {
     'Delete',
   ];
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
-  todoTasks: TaskResponse[] = [];
-  completedTasks: TaskResponse[] = [];
+  todoTasks: Task[] = [];
+  completedTasks: Task[] = [];
 
   constructor(
     private tokenService: TokenService,
@@ -136,7 +136,7 @@ export class HomeComponent {
 
   handleMenuClick(
     section: 'TODO' | 'DONE',
-    event: { item: string; task: TaskResponse | null }
+    event: { item: string; task: Task | null }
   ): void {
     if (section === 'TODO') {
       if (event.item === 'Mark as Done') {
