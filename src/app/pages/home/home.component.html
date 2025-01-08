@@ -67,6 +67,7 @@
         <app-task-card
           [menuItems]="doneMenuItems"
           [task]="item"
+          [cardType]="'done'"
           (menuItemClick)="handleMenuClick('DONE', $event)"
         />
       </div>

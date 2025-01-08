@@ -50,6 +50,6 @@ export class TaskService {
   public changeTaskStatus(task: TaskUpdateStatusRequest): Observable<Task> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.put<Task>(this.gateway_url + '/tasks/comment', task, { headers });
+    return this.httpClient.put<Task>(this.gateway_url + '/tasks/status', task, { headers });
   }
 }

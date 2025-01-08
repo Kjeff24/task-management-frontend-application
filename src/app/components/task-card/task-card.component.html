@@ -20,17 +20,25 @@
       </ul>
     </div>
     <div class="pt-6 px-2">
-      <p class="text-white font-16 mb-1">
+      <p class="text-white font-14 mb-1">
         Title:
         <span class="text-sm">{{ task?.name }}</span>
       </p>
-      <p class="text-white font-16 mb-1">
+      <p class="text-white font-14 mb-1">
         Description:
         <span class="text-sm">{{ task?.description }}</span>
       </p>
-      <p class="text-white font-16 mb-1">
+      <p class="text-white font-14 mb-1">
         Deadline:
         <span class="text-sm">{{ task?.deadline }}</span>
+      </p>
+      <p *ngIf="isAdmin" class="text-white font-14 mb-1">
+        AssignedTo:
+        <span class="text-sm">{{ task?.assignedTo }}</span>
+      </p>
+      <p *ngIf="cardType === 'done'" class="text-white font-14 mb-1">
+        Completed At:
+        <span class="text-sm">{{ task?.completedAt }}</span>
       </p>
     </div>
   </div>
