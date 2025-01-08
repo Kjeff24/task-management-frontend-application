@@ -1,0 +1,38 @@
+<div class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" (click)="closeModal()">
+    <!-- Modal Container -->
+    <div class="bg-2 p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto max-h-screen overflow-y-auto relative" (click)="$event.stopPropagation()">
+      <form [formGroup]="commentForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <h2 class="text-xl font-bold text-white text-center">Comment</h2>
+  
+        <div>
+            <label for="comment" class="block text-sm font-medium text-gray-300 mb-1">Comment</label>
+            <textarea
+              id="comment"
+              formControlName="comment"
+              rows="3"
+              class="w-full p-3 rounded-lg border border-gray-600 bg-1 text-white focus:ring focus:ring-blue-500 focus:border-blue-500"
+            ></textarea>
+            <div *ngIf="commentForm.get('comment')?.invalid && commentForm.get('comment')?.touched">
+              <small class="text-red-500 text-sm">Comment is required</small>
+            </div>
+          </div>
+        <!-- Buttons -->
+        <div class="flex justify-between items-center space-x-4">
+          <button
+            type="submit"
+            [disabled]="commentForm.invalid"
+            class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:ring focus:ring-blue-500 disabled:opacity-50"
+          >Add
+          </button>
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="w-full py-2 px-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 focus:ring focus:ring-gray-500"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

@@ -31,10 +31,13 @@ export interface TaskUpdateAssignedToRequest {
 export interface TaskUpdateStatusRequest {
   taskId: string;
   status: string;
-  newDeadline: Date;
 }
 
 export interface TaskCommentRequest {
   taskId: string;
+  comment: string;
+}
+
+export interface CommentRequest {
   comment: string;
 }
