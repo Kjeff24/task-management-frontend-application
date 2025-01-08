@@ -17,10 +17,11 @@ gateway_url = environment.api_gateway;
     private tokenService: TokenService
   ) {}
 
-  public createUser(user: UserRequest): Observable<MessageResponse> {
+  public createUser(user: UserRequest): Observable<UserResponse> {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.httpClient.post<MessageResponse>(
+    console.log(user)
+    return this.httpClient.post<UserResponse>(
       this.gateway_url + '/user-management',
       user,
       { headers }

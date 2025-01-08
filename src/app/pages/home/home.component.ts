@@ -11,18 +11,20 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
 import { TaskService } from '../../services/task-service/task.service';
 import { MessageResponse } from '../../models/message';
 import { UserService } from '../../services/user-service/user.service';
-import { UserResponse } from '../../models/user';
+import { UserRequest, UserResponse } from '../../models/user';
+import { AddUserComponent } from '../../components/add-user/add-user.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, NewTaskModalComponent, TaskCardComponent],
+  imports: [CommonModule, NewTaskModalComponent, TaskCardComponent, AddUserComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
   code = '';
   isNewTaskModalOpen = false;
+  isAddUserModalOpen = false;
   taskToUpdate: Task | null = null;
   isTaskUpdate: boolean = false;
   todoMenuItems = [
@@ -61,12 +63,12 @@ export class HomeComponent {
     });
   }
 
-  openNewTaskModal() {
-    this.isNewTaskModalOpen = true;
+  addUserModalToggle() {
+    this.isAddUserModalOpen = !this.isAddUserModalOpen;
   }
 
-  closeModal() {
-    this.isNewTaskModalOpen = false;
+  newTaskModalToggle() {
+    this.isNewTaskModalOpen = !this.isNewTaskModalOpen;
   }
 
   handleMenuClick(
@@ -80,7 +82,7 @@ export class HomeComponent {
         }
       }
       if (event.item === 'Edit') {
-        this.openNewTaskModal();
+        this.newTaskModalToggle();
         this.taskToUpdate = event.task;
         this.isTaskUpdate = true;
       }
@@ -99,6 +101,17 @@ export class HomeComponent {
     } else {
       this.createTask(event.task);
     }
+  }
+
+  saveUser(userRequest: UserRequest) {
+    this.userService.createUser(userRequest).subscribe({
+      next: (user: UserResponse) => {
+        this.users.push(user);
+      },
+      error: (error: MessageResponse) => {
+        console.log(error.message)
+      }
+    })
   }
 
   getToken(code: string): void {
