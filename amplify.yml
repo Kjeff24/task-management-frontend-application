@@ -6,6 +6,14 @@ frontend:
                 - 'nvm install 18.19.1'
                 - 'nvm use 18.19.1'
                 - 'npm ci --cache .npm --prefer-offline'
+                - echo "USER_POOL_DOMAIN_URI=$USER_POOL_DOMAIN_URI" >> .env
+                - echo "TOKEN_ENDPOINT=$TOKEN_ENDPOINT" >> .env
+                - echo "LOGIN_ENDPOINT=$LOGIN_ENDPOINT" >> .env
+                - echo "CLIENT_ID=$CLIENT_ID" >> .env
+                - echo "CLIENT_SECRET=$CLIENT_SECRET" >> .env
+                - echo "REDIRECT_URI=$REDIRECT_URI" >> .env
+                - echo "ADMIN_GROUP=$ADMIN_GROUP" >> .env
+                - echo "API_GATEWAY=$API_GATEWAY" >> .env
         build:
             commands:
                 - 'npm run build --configuration=production'
