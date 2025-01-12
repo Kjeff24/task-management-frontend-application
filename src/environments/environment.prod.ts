@@ -8,6 +8,7 @@ export const environment = {
     client_secret: process.env['CLIENT_SECRET'] || '',
     redirect_uri: process.env['REDIRECT_URI'] || '',
     response_type: 'code',
-    adminGroup: process.env['ADMIN_GROUP'] || '',
+    adminGroup: 'ADMIN',
+    userGroup: 'USER',
     api_gateway: process.env['API_GATEWAY'] || ''
 }

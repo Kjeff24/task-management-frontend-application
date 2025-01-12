@@ -61,17 +61,19 @@ export class TokenService {
     return sessionStorage.getItem(ID_TOKEN) != null;
   }
 
-  getPayload() : {email: string, sub: string, isAdmin: boolean  } | null {
+  getPayload() : {email: string, sub: string, isAdmin: boolean, isUser: boolean  } | null {
     const token = this.getIdToken();
     if(token) {
       const payload = token.split(".")[1];
       const decodedPayload = atob(payload);
       const values = JSON.parse(decodedPayload);
-      const isAdmin = values['cognito:groups'] && values['cognito:groups'].includes('apiAdmins');
+      const isAdmin = values['cognito:groups'] && values['cognito:groups'].includes('ADMIN');
+      const isUser = values['cognito:groups'] && values['cognito:groups'].includes('USER');
       return {
         email: values.email,
         sub: values.sub,
-        isAdmin: isAdmin || false
+        isAdmin: isAdmin || false,
+        isUser: isUser || false
       };
       
     } else {
