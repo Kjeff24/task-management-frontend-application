@@ -2,12 +2,19 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AddCommentComponent } from "../../components/add-comment/add-comment.component";
+import { AddCommentComponent } from '../../components/add-comment/add-comment.component';
 import { AddUserComponent } from '../../components/add-user/add-user.component';
 import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { MessageResponse } from '../../models/message';
-import { CommentRequest, Task, TaskCommentRequest, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../models/task';
+import {
+  CommentRequest,
+  Task,
+  TaskCommentRequest,
+  TaskRequest,
+  TaskResponse,
+  TaskUpdateStatusRequest,
+} from '../../models/task';
 import { TokenResponse } from '../../models/token-reponse';
 import { UserRequest, UserResponse } from '../../models/user';
 import { TaskService } from '../../services/task-service/task.service';
@@ -17,7 +24,14 @@ import { UserService } from '../../services/user-service/user.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, NewTaskModalComponent, TaskCardComponent, AddUserComponent, AddUserComponent, AddCommentComponent],
+  imports: [
+    CommonModule,
+    NewTaskModalComponent,
+    TaskCardComponent,
+    AddUserComponent,
+    AddUserComponent,
+    AddCommentComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
@@ -80,23 +94,26 @@ export class HomeComponent {
     section: 'TODO' | 'DONE',
     event: { item: string; task: Task | null }
   ): void {
-    if (section === 'DONE' || section === 'TODO'){
-      if (event.item === 'Add Comment' && event.task) {
-          this.commentModalToggle();
-          this.taskIdComment = event.task.taskId;
-      }
-    } else if (section === 'TODO') {
+    if (section === 'TODO') {
       if (event.item === 'Mark as Done' && event.task) {
-          this.markTaskAsDone(event.task?.taskId, 'completed')
+        this.markTaskAsDone(event.task?.taskId, 'completed');
       }
       if (event.item === 'Edit') {
         this.newTaskModalToggle();
         this.taskToUpdate = event.task;
         this.isTaskUpdate = true;
       }
+      if (event.item === 'Add Comment' && event.task) {
+        this.commentModalToggle();
+        this.taskIdComment = event.task.taskId;
+      }
     } else if (section === 'DONE') {
       if (event.item === 'Restore to TODO' && event.task) {
-          this.markTaskAsDone(event.task?.taskId, 'open')
+        this.markTaskAsDone(event.task?.taskId, 'open');
+      }
+      if (event.item === 'Add Comment' && event.task) {
+        this.commentModalToggle();
+        this.taskIdComment = event.task.taskId;
       }
     }
   }
@@ -115,30 +132,32 @@ export class HomeComponent {
         this.users.push(user);
       },
       error: (error: MessageResponse) => {
-        console.log(error.message)
-      }
-    })
+        console.log(error.message);
+      },
+    });
   }
 
-  saveComment(commentRequest: CommentRequest){
+  saveComment(commentRequest: CommentRequest) {
     const comment: TaskCommentRequest = {
       taskId: this.taskIdComment,
-      comment: commentRequest.comment
-    }
+      comment: commentRequest.comment,
+    };
     this.taskService.addUserComment(comment).subscribe({
       next: (task: Task) => {
         this.updateTaskInLists(task);
       },
       error: (error: MessageResponse) => {
-        console.log(error.message)
-      }
-    })
+        console.log(error.message);
+      },
+    });
   }
 
   private updateTaskInLists(updatedTask: Task): void {
     const updateTask = (tasks: Task[]) =>
-      tasks.map(task => task.taskId === updatedTask.taskId ? updatedTask : task);
-    
+      tasks.map((task) =>
+        task.taskId === updatedTask.taskId ? updatedTask : task
+      );
+
     this.todoTasks = updateTask(this.todoTasks);
     this.completedTasks = updateTask(this.completedTasks);
   }
@@ -178,7 +197,9 @@ export class HomeComponent {
   updateTask(taskRequest: TaskRequest, taskId: string): void {
     this.taskService.updateTask(taskRequest, taskId).subscribe({
       next: (task: Task) => {
-        this.todoTasks = this.todoTasks.map(t => t.taskId === task.taskId ? task : t);
+        this.todoTasks = this.todoTasks.map((t) =>
+          t.taskId === task.taskId ? task : t
+        );
       },
       error: (error: HttpErrorResponse) => {
         console.log(error);
@@ -210,36 +231,39 @@ export class HomeComponent {
     });
   }
 
-  markTaskAsDone(taskId: string, status: string) : void {
+  markTaskAsDone(taskId: string, status: string): void {
     const taskUpdateStatusRequest: TaskUpdateStatusRequest = {
       taskId,
-      status
+      status,
     };
     this.taskService.changeTaskStatus(taskUpdateStatusRequest).subscribe({
       next: (task: Task) => {
-        if(status === 'completed') {
+        if (status === 'completed') {
           this.completedTasks.push(task);
-          this.todoTasks = this.todoTasks.filter((t) => t.taskId !== task.taskId);
-        } else if(status === 'open') {
+          this.todoTasks = this.todoTasks.filter(
+            (t) => t.taskId !== task.taskId
+          );
+        } else if (status === 'open') {
           this.todoTasks.push(task);
-          this.completedTasks = this.completedTasks.filter((t) => t.taskId !== task.taskId)
+          this.completedTasks = this.completedTasks.filter(
+            (t) => t.taskId !== task.taskId
+          );
         }
       },
       error: (err: MessageResponse) => {
         console.log(err.message);
       },
-    })
+    });
   }
 
   getUsers(): void {
     this.userService.getAllUsers().subscribe({
       next: (users: UserResponse[]) => {
         this.users = users;
-        console.log(this.users)
       },
       error: (error: MessageResponse) => {
         console.error(error.message);
-      }
-    })
+      },
+    });
   }
 }
