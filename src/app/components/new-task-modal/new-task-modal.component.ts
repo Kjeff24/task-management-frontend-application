@@ -3,15 +3,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
-  Validators,
+  Validators
 } from '@angular/forms';
-import { TaskService } from '../../services/task-service/task.service';
-import { Task, TaskRequest, TaskResponse } from '../../models/task';
-import { convertDateToISOFormat } from '../../utils/date-utils';
-import { UserService } from '../../services/user-service/user.service';
-import { MessageResponse } from '../../models/message';
+import { Task, TaskRequest } from '../../models/task';
 import { UserResponse } from '../../models/user';
 
 @Component({
@@ -35,8 +30,7 @@ export class NewTaskModalComponent {
   taskId: string = '';
 
   constructor(
-    private fb: FormBuilder,
-    private datePipe: DatePipe
+    private fb: FormBuilder
   ) {
     this.taskForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -48,13 +42,8 @@ export class NewTaskModalComponent {
 
   ngOnInit(): void {
     if (this.isTaskUpdate && this.task != null) {
-      const convertedDeadline = convertDateToISOFormat(
-        this.task.deadline,
-        this.datePipe
-      );
       this.taskForm.patchValue({
-        ...this.task,
-        deadline: convertedDeadline,
+        ...this.task
       });
       this.taskId = this.task.taskId;
     }
