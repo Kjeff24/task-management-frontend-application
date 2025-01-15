@@ -59,7 +59,8 @@
             class="w-full p-3 rounded-lg border border-gray-600 bg-1 text-white focus:ring focus:ring-blue-500 focus:border-blue-500"
           />
           <div *ngIf="taskForm.get('deadline')?.invalid && taskForm.get('deadline')?.touched">
-            <small class="text-red-500 text-sm">Deadline is required</small>
+            <small class="text-red-500 text-sm" *ngIf="taskForm.get('deadline')?.errors?.['required']">Deadline is required</small>
+            <small class="text-red-500 text-sm" *ngIf="taskForm.get('deadline')?.errors?.['invalidDeadline']">{{ taskForm.get('deadline')?.errors?.['invalidDeadline'].message }}</small>
           </div>
         </div>
   

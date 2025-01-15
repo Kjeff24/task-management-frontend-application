@@ -39,7 +39,7 @@
       </p>
       <p *ngIf="cardType === 'done'" class="text-white font-14 mb-1">
         Completed At:
-        <span class="text-sm">{{ task?.completedAt }}</span>
+        <span class="text-sm">{{ task?.completedAt | date: 'dd MMM yyyy HH:mm' }}</span>
       </p>
       <p class="text-white font-14 mb-1">
         Comment:

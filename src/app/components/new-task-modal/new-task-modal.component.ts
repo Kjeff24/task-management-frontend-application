@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Task, TaskRequest } from '../../models/task';
 import { UserResponse } from '../../models/user';
+import { deadlineValidator } from '../../utils/validators';
 
 @Component({
   selector: 'app-new-task-modal',
@@ -36,7 +37,7 @@ export class NewTaskModalComponent {
       name: ['', [Validators.required]],
       description: ['', [Validators.required]],
       assignedTo: ['', [Validators.required]],
-      deadline: ['', [Validators.required]],
+      deadline: ['', [Validators.required, deadlineValidator()]],
     });
   }
 
