@@ -42,6 +42,12 @@
     (save)="saveComment($event)"
     />
 
+    <app-add-deadline 
+    *ngIf="isDeadlineModalOpen"
+    (close)="deadlineModalToggle()"
+    (addDeadline)="addDeadline($event)"
+    />
+
     <form class="relative">
       <input
         type="search"
