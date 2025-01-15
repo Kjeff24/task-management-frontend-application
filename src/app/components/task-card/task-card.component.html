@@ -3,6 +3,7 @@
     <img
       src="../../../assets/svg/three-dots-vertical.svg"
       class="absolute right-1 top-3"
+      *ngIf="cardType !== 'expired' || !isAdmin"
       (click)="toggleMenu($event)"
     />
     <div

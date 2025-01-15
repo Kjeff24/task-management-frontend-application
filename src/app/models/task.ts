@@ -20,7 +20,8 @@ export interface TaskRequest {
 
 export interface TaskResponse {
   open: Task[],
-  completed: Task[]
+  completed: Task[],
+  expired: Task[]
 }
 
 export interface TaskUpdateAssignedToRequest {

@@ -50,8 +50,10 @@ export class HomeComponent {
     'Delete',
   ];
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
+  expiredMenuItems = ['Restore to TODO']
   todoTasks: Task[] = [];
   completedTasks: Task[] = [];
+  expiredTasks: Task[] = [];
   isAdmin: boolean = false;
   users: UserResponse[] = [];
   taskIdComment: string = '';
@@ -91,12 +93,12 @@ export class HomeComponent {
   }
 
   handleMenuClick(
-    section: 'TODO' | 'DONE',
+    section: 'TODO' | 'DONE' | 'EXPIRED',
     event: { item: string; task: Task | null }
   ): void {
     if (section === 'TODO') {
       if (event.item === 'Mark as Done' && event.task) {
-        this.markTaskAsDone(event.task?.taskId, 'completed');
+        this.changeTaskStatus(event.task?.taskId, 'completed');
       }
       if (event.item === 'Edit') {
         this.newTaskModalToggle();
@@ -109,11 +111,15 @@ export class HomeComponent {
       }
     } else if (section === 'DONE') {
       if (event.item === 'Restore to TODO' && event.task) {
-        this.markTaskAsDone(event.task?.taskId, 'open');
+        this.changeTaskStatus(event.task?.taskId, 'open');
       }
       if (event.item === 'Add Comment' && event.task) {
         this.commentModalToggle();
         this.taskIdComment = event.task.taskId;
+      }
+    } else if(section === 'EXPIRED') {
+      if (event.item === 'Restore to TODO' && event.task) {
+        this.changeTaskStatus(event.task?.taskId, 'open');
       }
     }
   }
@@ -212,6 +218,7 @@ export class HomeComponent {
       next: (data: TaskResponse) => {
         this.todoTasks = data.open;
         this.completedTasks = data.completed;
+        this.expiredTasks = data.expired;
       },
       error: (err) => {
         console.log(err);
@@ -224,6 +231,7 @@ export class HomeComponent {
       next: (data: TaskResponse) => {
         this.todoTasks = data.open;
         this.completedTasks = data.completed;
+        this.expiredTasks = data.expired;
       },
       error: (err) => {
         console.log(err);
@@ -231,7 +239,7 @@ export class HomeComponent {
     });
   }
 
-  markTaskAsDone(taskId: string, status: string): void {
+  changeTaskStatus(taskId: string, status: string): void {
     const taskUpdateStatusRequest: TaskUpdateStatusRequest = {
       taskId,
       status,
