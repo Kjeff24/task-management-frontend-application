@@ -20,6 +20,7 @@ import { UserRequest, UserResponse } from '../../models/user';
 import { TaskService } from '../../services/task-service/task.service';
 import { TokenService } from '../../services/token/token.service';
 import { UserService } from '../../services/user-service/user.service';
+import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline.component';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +32,7 @@ import { UserService } from '../../services/user-service/user.service';
     AddUserComponent,
     AddUserComponent,
     AddCommentComponent,
+    AddDeadlineComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -40,7 +42,9 @@ export class HomeComponent {
   isNewTaskModalOpen = false;
   isAddUserModalOpen = false;
   isCommentModalOpen = false;
+  isDeadlineModalOpen = false;
   taskToUpdate: Task | null = null;
+  taskIdToChangeDeadline: string = '';
   isTaskUpdate: boolean = false;
   todoMenuItems = [
     'Edit',
@@ -50,8 +54,10 @@ export class HomeComponent {
     'Delete',
   ];
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
+  expiredMenuItems = ['Restore to TODO'];
   todoTasks: Task[] = [];
   completedTasks: Task[] = [];
+  expiredTasks: Task[] = [];
   isAdmin: boolean = false;
   users: UserResponse[] = [];
   taskIdComment: string = '';
@@ -90,13 +96,17 @@ export class HomeComponent {
     this.isCommentModalOpen = !this.isCommentModalOpen;
   }
 
+  deadlineModalToggle() {
+    this.isDeadlineModalOpen = !this.isDeadlineModalOpen;
+  }
+
   handleMenuClick(
-    section: 'TODO' | 'DONE',
+    section: 'TODO' | 'DONE' | 'EXPIRED',
     event: { item: string; task: Task | null }
   ): void {
     if (section === 'TODO') {
       if (event.item === 'Mark as Done' && event.task) {
-        this.markTaskAsDone(event.task?.taskId, 'completed');
+        this.changeTaskStatus(event.task?.taskId, 'completed');
       }
       if (event.item === 'Edit') {
         this.newTaskModalToggle();
@@ -109,11 +119,31 @@ export class HomeComponent {
       }
     } else if (section === 'DONE') {
       if (event.item === 'Restore to TODO' && event.task) {
-        this.markTaskAsDone(event.task?.taskId, 'open');
+        const currentTime = new Date();
+        const deadline = new Date(event.task.deadline);
+
+        if (deadline.getTime() <= currentTime.getTime() + 5 * 60 * 1000) {
+          this.taskIdToChangeDeadline = event.task.taskId;
+          this.deadlineModalToggle();
+        } else {
+          this.changeTaskStatus(event.task?.taskId, 'open');
+        }
       }
       if (event.item === 'Add Comment' && event.task) {
         this.commentModalToggle();
         this.taskIdComment = event.task.taskId;
+      }
+    } else if (section === 'EXPIRED') {
+      if (event.item === 'Restore to TODO' && event.task) {
+        const currentTime = new Date();
+        const deadline = new Date(event.task.deadline);
+
+        if (deadline.getTime() <= currentTime.getTime() + 5 * 60 * 1000) {
+          this.taskIdToChangeDeadline = event.task.taskId;
+          this.deadlineModalToggle();
+        } else {
+          this.changeTaskStatus(event.task?.taskId, 'open');
+        }
       }
     }
   }
@@ -150,6 +180,19 @@ export class HomeComponent {
         console.log(error.message);
       },
     });
+  }
+
+  addDeadline(deadline: string) {
+    this.changeTaskStatus(this.taskIdToChangeDeadline, 'open', deadline)
+  }
+
+  changeTaskStatus(taskId: string, status: string, deadline?: string): void {
+    const taskUpdateStatusRequest: TaskUpdateStatusRequest = {
+      taskId,
+      status,
+      deadline: deadline ? deadline: null,
+    };
+    this.updateTaskStatus(taskUpdateStatusRequest, status);
   }
 
   private updateTaskInLists(updatedTask: Task): void {
@@ -212,6 +255,7 @@ export class HomeComponent {
       next: (data: TaskResponse) => {
         this.todoTasks = data.open;
         this.completedTasks = data.completed;
+        this.expiredTasks = data.expired;
       },
       error: (err) => {
         console.log(err);
@@ -224,6 +268,7 @@ export class HomeComponent {
       next: (data: TaskResponse) => {
         this.todoTasks = data.open;
         this.completedTasks = data.completed;
+        this.expiredTasks = data.expired;
       },
       error: (err) => {
         console.log(err);
@@ -231,11 +276,7 @@ export class HomeComponent {
     });
   }
 
-  markTaskAsDone(taskId: string, status: string): void {
-    const taskUpdateStatusRequest: TaskUpdateStatusRequest = {
-      taskId,
-      status,
-    };
+  updateTaskStatus(taskUpdateStatusRequest: TaskUpdateStatusRequest, status: string): void {
     this.taskService.changeTaskStatus(taskUpdateStatusRequest).subscribe({
       next: (task: Task) => {
         if (status === 'completed') {
