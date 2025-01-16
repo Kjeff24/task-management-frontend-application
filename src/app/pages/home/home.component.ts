@@ -29,8 +29,6 @@ import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline
     CommonModule,
     NewTaskModalComponent,
     TaskCardComponent,
-    AddUserComponent,
-    AddUserComponent,
     AddCommentComponent,
     AddDeadlineComponent,
   ],
@@ -40,7 +38,6 @@ import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline
 export class HomeComponent {
   code = '';
   isNewTaskModalOpen = false;
-  isAddUserModalOpen = false;
   isCommentModalOpen = false;
   isDeadlineModalOpen = false;
   taskToUpdate: Task | null = null;
@@ -82,10 +79,6 @@ export class HomeComponent {
         this.getAllTask();
       }
     });
-  }
-
-  addUserModalToggle() {
-    this.isAddUserModalOpen = !this.isAddUserModalOpen;
   }
 
   newTaskModalToggle() {
@@ -156,17 +149,6 @@ export class HomeComponent {
     }
   }
 
-  saveUser(userRequest: UserRequest) {
-    this.userService.createUser(userRequest).subscribe({
-      next: (user: UserResponse) => {
-        this.users.push(user);
-      },
-      error: (error: MessageResponse) => {
-        console.log(error.message);
-      },
-    });
-  }
-
   saveComment(commentRequest: CommentRequest) {
     const comment: TaskCommentRequest = {
       taskId: this.taskIdComment,
@@ -224,6 +206,14 @@ export class HomeComponent {
     } else {
       this.getTaskByUser();
     }
+  }
+
+  viewUsers(): void {
+    this.router.navigate(['/users']);
+  }
+
+  goHome(): void {
+    this.router.navigate(['/']);
   }
 
   createTask(taskRequest: TaskRequest): void {
