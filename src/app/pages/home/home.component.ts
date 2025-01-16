@@ -279,6 +279,9 @@ export class HomeComponent {
           this.completedTasks = this.completedTasks.filter(
             (t) => t.taskId !== task.taskId
           );
+          this.expiredTasks = this.expiredTasks.filter(
+            (t) => t.taskId !== task.taskId
+          );
         }
       },
       error: (err: MessageResponse) => {
