@@ -2,6 +2,7 @@ export interface Task {
   taskId: string;
   name: string;
   description: string;
+  responsibility: string;
   userComment: string;
   assignedTo: string;
   status: string;
@@ -14,6 +15,7 @@ export interface Task {
 export interface TaskRequest {
   name: string;
   description: string;
+  responsibility: string;
   assignedTo: string;
   deadline: Date;
 }

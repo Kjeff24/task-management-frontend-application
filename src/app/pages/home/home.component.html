@@ -1,7 +1,7 @@
 <div>
   <div class="nav-bar bg-2 p-4 flex justify-between items-center">
     <div>
-      <h1 class="text-white font-bold text-lg">Task Management</h1>
+      <h1 class="text-white font-bold text-lg cursor-pointer" (click)="goHome()">Task Management</h1>
     </div>
 
     <div *ngIf="isAdmin" class="flex gap-4">
@@ -12,12 +12,12 @@
         />
         <h1 class="text-white font-bold">New Task</h1>
       </div>
-      <div class="flex gap-2 cursor-pointer" (click)="addUserModalToggle()">
+      <div class="flex gap-2 cursor-pointer" (click)="viewUsers()">
         <img
-          src="../../../assets/svg/plus-circle-fill.svg"
+          src="../../../assets/svg/eye-fill.svg"
           alt="plus-circle-fill"
         />
-        <h1 class="text-white font-bold">Add User</h1>
+        <h1 class="text-white font-bold">View User</h1>
       </div>
     </div>
 
@@ -28,12 +28,6 @@
       [users]="users"
       (close)="newTaskModalToggle()"
       (save)="saveTask($event)"
-    />
-
-    <app-add-user 
-    *ngIf="isAddUserModalOpen"
-    (close)="addUserModalToggle()"
-    (save)="saveUser($event)"
     />
 
     <app-add-comment
