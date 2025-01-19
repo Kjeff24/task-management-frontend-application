@@ -139,3 +139,16 @@ src/
 ├── main.ts
 └── styles.css
 ```
+
+## APPLICATION UI
+### ADMIN
+1. Home
+![alt](./src/assets/screenshots/admin-home.png)
+2. Create task
+![alt](./src/assets/screenshots/admin-create-task.png)
+3. View users
+![alt](./src/assets/screenshots/admin-view-users.png)
+4. Add users
+![alt](./src/assets/screenshots/admin-add-user.png)
+
+### USERS
