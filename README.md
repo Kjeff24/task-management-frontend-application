@@ -152,3 +152,7 @@ src/
 ![alt](./src/assets/screenshots/admin-add-user.png)
 
 ### USERS
+1. Home
+![alt](./src/assets/screenshots/user-home.png)
+2. Add comment
+![alt](./src/assets/screenshots/user-add-comment.png)
