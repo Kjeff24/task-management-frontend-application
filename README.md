@@ -1,27 +1,141 @@
-# TaskManagementApp
+# TASK MANAGEMENT SYSTEM
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
+## OVERVIEW
+This is the frontend for a task management system built using Angular. The system allows an administrator to create users and assign tasks to them. Each task has one of three statuses: Open, Completed, and Expired. Administrators can open tasks and set deadlines, while users can mark tasks as completed. Tasks automatically expire once the deadline passes..
 
-## Development server
+## FEATURES
+### Admin Functionality:
+- Create and manage users.
+- Assign tasks to users.
+- Set deadlines for tasks.
+- View all tasks and their statuses.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### User Functionality:
+- View assigned tasks.
+- Mark tasks as completed.
 
-## Code scaffolding
+### Task Status Management:
+- Tasks can be Open, Completed, or Expired.
+- Expired status is set automatically when the deadline is reached.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## INSTALLATION AND SETUP
+1. Clone the repository
+```
+git clone https://github.com/Kjeff24/task-management-frontend-application.git
+```
+2. Install dependencies
+```
+npm install
+```
+3. Clone the backend repository for API integration:
+```
+https://github.com/Kjeff24/task-management-serveless-application.git
+```
+Follow the backend repository instructions for setup.
+4. Create a .env file and provide your values
+```
+USER_POOL_DOMAIN_URI=
+TOKEN_ENDPOINT=
+LOGIN_ENDPOINT=
+CLIENT_ID=
+CLIENT_SECRET=
+REDIRECT_URI=
+API_GATEWAY=
+```
+5. Run the application
+```
+ng serve
+```
+6. Open your browser and navigate to:
+```
+http://localhost:4200 
+```
 
-## Build
+## TECHNOLOGIES USED
+- Angular (Frontend Framework)
+- TypeScript (Programming Language)
+- HTML & CSS (UI)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## FOLDER STRUCTURE
+```
+src/
+├── app
+│   ├── app.component.css
+│   ├── app.component.html
+│   ├── app.component.spec.ts
+│   ├── app.component.ts
+│   ├── app.config.ts
+│   ├── app.routes.ts
+│   ├── components
+│   │   ├── add-comment
+│   │   │   ├── add-comment.component.css
+│   │   │   ├── add-comment.component.html
+│   │   │   ├── add-comment.component.spec.ts
+│   │   │   └── add-comment.component.ts
+│   │   ├── add-deadline
+│   │   │   ├── add-deadline.component.css
+│   │   │   ├── add-deadline.component.html
+│   │   │   ├── add-deadline.component.spec.ts
+│   │   │   └── add-deadline.component.ts
+│   │   ├── add-user
+│   │   │   ├── add-user.component.css
+│   │   │   ├── add-user.component.html
+│   │   │   ├── add-user.component.spec.ts
+│   │   │   └── add-user.component.ts
+│   │   ├── new-task-modal
+│   │   │   ├── new-task-modal.component.css
+│   │   │   ├── new-task-modal.component.html
+│   │   │   ├── new-task-modal.component.spec.ts
+│   │   │   └── new-task-modal.component.ts
+│   │   └── task-card
+│   │       ├── task-card.component.css
+│   │       ├── task-card.component.html
+│   │       ├── task-card.component.spec.ts
+│   │       └── task-card.component.ts
+│   ├── guards
+│   │   └── admin
+│   │       ├── admin.guard.spec.ts
+│   │       └── admin.guard.ts
+│   ├── models
+│   │   ├── message.ts
+│   │   ├── task.ts
+│   │   ├── token-reponse.ts
+│   │   └── user.ts
+│   ├── pages
+│   │   ├── home
+│   │   │   ├── home.component.css
+│   │   │   ├── home.component.html
+│   │   │   ├── home.component.spec.ts
+│   │   │   └── home.component.ts
+│   │   └── users
+│   │       ├── users.component.css
+│   │       ├── users.component.html
+│   │       ├── users.component.spec.ts
+│   │       └── users.component.ts
+│   ├── services
+│   │   ├── task-service
+│   │   │   ├── task.service.spec.ts
+│   │   │   └── task.service.ts
+│   │   ├── token
+│   │   │   ├── token.service.spec.ts
+│   │   │   └── token.service.ts
+│   │   └── user-service
+│   │       ├── user.service.spec.ts
+│   │       └── user.service.ts
+│   └── utils
+│       ├── date-utils.ts
+│       └── validators.ts
+├── assets
+│   └── svg
+│       ├── eye-fill.svg
+│       ├── plus-circle-fill.svg
+│       └── three-dots-vertical.svg
+├── custom-webpack.config.ts
+├── environments
+│   ├── environment.dev.ts
+│   ├── environment.prod.ts
+│   └── environment.ts
+├── index.html
+├── main.ts
+└── styles.css
+```
