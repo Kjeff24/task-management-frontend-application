@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Task, TaskCommentRequest, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../models/task';
+import { AssignToRequest, Task, TaskCommentRequest, TaskRequest, TaskResponse, TaskUpdateStatusRequest } from '../../models/task';
 import { TokenService } from '../token/token.service';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -51,5 +51,17 @@ export class TaskService {
     const token = this.tokenService.getIdToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.httpClient.put<Task>(this.gateway_url + '/tasks/status', task, { headers });
+  }
+
+  public deleteTask(taskId: string): Observable<void> {
+    const token = this.tokenService.getIdToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.httpClient.delete<void>(this.gateway_url + `/tasks/delete/${taskId}`, { headers });
+  }
+
+  public changeAssignedUser(assingToRequest: AssignToRequest): Observable<Task> {
+    const token = this.tokenService.getIdToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.httpClient.put<Task>(this.gateway_url + '/tasks/assign-to', assingToRequest, { headers });
   }
 }
