@@ -8,6 +8,7 @@ import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { MessageResponse } from '../../models/message';
 import {
+  AssignToRequest,
   CommentRequest,
   Task,
   TaskCommentRequest,
@@ -21,6 +22,7 @@ import { TaskService } from '../../services/task-service/task.service';
 import { TokenService } from '../../services/token/token.service';
 import { UserService } from '../../services/user-service/user.service';
 import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline.component';
+import { AssignUserComponent } from '../../components/assign-user/assign-user.component';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +33,7 @@ import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline
     TaskCardComponent,
     AddCommentComponent,
     AddDeadlineComponent,
+    AssignUserComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -40,8 +43,9 @@ export class HomeComponent {
   isNewTaskModalOpen = false;
   isCommentModalOpen = false;
   isDeadlineModalOpen = false;
+  isAssignUserModalOpen = false;
   taskToUpdate: Task | null = null;
-  taskIdToChangeDeadline: string = '';
+  taskId: string = '';
   isTaskUpdate: boolean = false;
   todoMenuItems = [
     'Edit',
@@ -57,7 +61,6 @@ export class HomeComponent {
   expiredTasks: Task[] = [];
   isAdmin: boolean = false;
   users: UserResponse[] = [];
-  taskIdComment: string = '';
 
   constructor(
     private tokenService: TokenService,
@@ -93,6 +96,10 @@ export class HomeComponent {
     this.isDeadlineModalOpen = !this.isDeadlineModalOpen;
   }
 
+  assignUserModalToggle() {
+    this.isAssignUserModalOpen = !this.isAssignUserModalOpen;
+  }
+
   handleMenuClick(
     section: 'TODO' | 'DONE' | 'EXPIRED',
     event: { item: string; task: Task | null }
@@ -108,7 +115,14 @@ export class HomeComponent {
       }
       if (event.item === 'Add Comment' && event.task) {
         this.commentModalToggle();
-        this.taskIdComment = event.task.taskId;
+        this.taskId = event.task.taskId;
+      }
+      if (event.item === 'Delete' && event.task) {
+        this.deleteTask(event.task.taskId);
+      }
+      if (event.item === 'Assign To' && event.task) {
+        this.taskId = event.task.taskId;
+        this.assignUserModalToggle();
       }
     } else if (section === 'DONE') {
       if (event.item === 'Restore to TODO' && event.task) {
@@ -116,7 +130,7 @@ export class HomeComponent {
         const deadline = new Date(event.task.deadline);
 
         if (deadline.getTime() <= currentTime.getTime() + 5 * 60 * 1000) {
-          this.taskIdToChangeDeadline = event.task.taskId;
+          this.taskId = event.task.taskId;
           this.deadlineModalToggle();
         } else {
           this.changeTaskStatus(event.task?.taskId, 'open');
@@ -124,7 +138,7 @@ export class HomeComponent {
       }
       if (event.item === 'Add Comment' && event.task) {
         this.commentModalToggle();
-        this.taskIdComment = event.task.taskId;
+        this.taskId = event.task.taskId;
       }
     } else if (section === 'EXPIRED') {
       if (event.item === 'Restore to TODO' && event.task) {
@@ -132,7 +146,7 @@ export class HomeComponent {
         const deadline = new Date(event.task.deadline);
 
         if (deadline.getTime() <= currentTime.getTime() + 5 * 60 * 1000) {
-          this.taskIdToChangeDeadline = event.task.taskId;
+          this.taskId = event.task.taskId;
           this.deadlineModalToggle();
         } else {
           this.changeTaskStatus(event.task?.taskId, 'open');
@@ -140,7 +154,7 @@ export class HomeComponent {
       }
     }
   }
-
+  
   saveTask(event: { task: TaskRequest; taskId: string }) {
     if (this.isTaskUpdate) {
       this.updateTask(event.task, event.taskId);
@@ -151,7 +165,7 @@ export class HomeComponent {
 
   saveComment(commentRequest: CommentRequest) {
     const comment: TaskCommentRequest = {
-      taskId: this.taskIdComment,
+      taskId: this.taskId,
       comment: commentRequest.comment,
     };
     this.taskService.addUserComment(comment).subscribe({
@@ -164,8 +178,16 @@ export class HomeComponent {
     });
   }
 
+  saveAssignUser(event: {assignedTo: string}) {
+    const assignToRequest: AssignToRequest = {
+      taskId: this.taskId,
+      assignedTo: event.assignedTo,
+    }
+    this.reAssignUser(assignToRequest);
+  }
+
   addDeadline(deadline: string) {
-    this.changeTaskStatus(this.taskIdToChangeDeadline, 'open', deadline)
+    this.changeTaskStatus(this.taskId, 'open', deadline)
   }
 
   changeTaskStatus(taskId: string, status: string, deadline?: string): void {
@@ -239,6 +261,32 @@ export class HomeComponent {
       },
     });
   }
+
+  
+  deleteTask(taskId: string) {
+    this.taskService.deleteTask(taskId).subscribe({
+      next: () => {
+        this.todoTasks = this.todoTasks.filter((t) => t.taskId !== taskId);
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+      },
+    });
+  }
+
+  reAssignUser(assignToRequest: AssignToRequest) {
+    this.taskService.changeAssignedUser(assignToRequest).subscribe({
+      next: (task: Task) => {
+        this.todoTasks = this.todoTasks.map((t) =>
+          t.taskId === task.taskId ? task : t
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+      },
+    });
+  }
+
 
   getAllCreatedTask(): void {
     this.taskService.getAllCreatedTasks().subscribe({

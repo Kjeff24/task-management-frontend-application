@@ -45,3 +45,8 @@ export interface TaskCommentRequest {
 export interface CommentRequest {
   comment: string;
 }
+
+export interface AssignToRequest {
+  taskId: string;
+  assignedTo: string;
+}

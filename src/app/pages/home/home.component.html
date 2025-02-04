@@ -42,6 +42,13 @@
     (addDeadline)="addDeadline($event)"
     />
 
+    <app-assign-user
+    *ngIf="isAssignUserModalOpen"
+    [users]="users"
+    (close)="assignUserModalToggle()"
+    (save)="saveAssignUser($event)"
+
+    />
     <form class="relative">
       <input
         type="search"
