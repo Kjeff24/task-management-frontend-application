@@ -55,7 +55,7 @@ export class HomeComponent {
     'Delete',
   ];
   doneMenuItems = ['Restore to TODO', 'Add Comment', 'Delete'];
-  expiredMenuItems = ['Restore to TODO'];
+  expiredMenuItems = ['Restore to TODO', 'Delete'];
   todoTasks: Task[] = [];
   completedTasks: Task[] = [];
   expiredTasks: Task[] = [];
@@ -140,6 +140,9 @@ export class HomeComponent {
         this.commentModalToggle();
         this.taskId = event.task.taskId;
       }
+      if (event.item === 'Delete' && event.task) {
+        this.deleteTask(event.task.taskId);
+      }
     } else if (section === 'EXPIRED') {
       if (event.item === 'Restore to TODO' && event.task) {
         const currentTime = new Date();
@@ -151,6 +154,9 @@ export class HomeComponent {
         } else {
           this.changeTaskStatus(event.task?.taskId, 'open');
         }
+      }
+      if (event.item === 'Delete' && event.task) {
+        this.deleteTask(event.task.taskId);
       }
     }
   }
@@ -209,6 +215,13 @@ export class HomeComponent {
     this.completedTasks = updateTask(this.completedTasks);
   }
 
+  private removeTaskFromLists(taskId: string) {
+    [this.todoTasks, this.completedTasks, this.expiredTasks] = 
+      [this.todoTasks, this.completedTasks, this.expiredTasks].map(tasks => 
+        tasks.filter(task => task.taskId !== taskId)
+      );
+  }
+
   getToken(code: string): void {
     this.tokenService.getToken(this.code).subscribe({
       next: (data: TokenResponse) => {
@@ -265,9 +278,7 @@ export class HomeComponent {
   
   deleteTask(taskId: string) {
     this.taskService.deleteTask(taskId).subscribe({
-      next: () => {
-        this.todoTasks = this.todoTasks.filter((t) => t.taskId !== taskId);
-      },
+      next: () => this.removeTaskFromLists(taskId),
       error: (error: HttpErrorResponse) => {
         console.log(error);
       },
