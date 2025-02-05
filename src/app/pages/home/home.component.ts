@@ -351,7 +351,7 @@ export class HomeComponent {
   }
 
   getUsers(): void {
-    this.userService.getAllUsers().subscribe({
+    this.userService.getAllTeamMembers().subscribe({
       next: (users: UserResponse[]) => {
         this.users = users;
       },
