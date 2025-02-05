@@ -3,7 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AddCommentComponent } from '../../components/add-comment/add-comment.component';
-import { AddUserComponent } from '../../components/add-user/add-user.component';
+import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline.component';
+import { AssignUserComponent } from '../../components/assign-user/assign-user.component';
 import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { MessageResponse } from '../../models/message';
@@ -17,12 +18,10 @@ import {
   TaskUpdateStatusRequest,
 } from '../../models/task';
 import { TokenResponse } from '../../models/token-reponse';
-import { UserRequest, UserResponse } from '../../models/user';
+import { UserResponse } from '../../models/user';
 import { TaskService } from '../../services/task-service/task.service';
 import { TokenService } from '../../services/token/token.service';
 import { UserService } from '../../services/user-service/user.service';
-import { AddDeadlineComponent } from '../../components/add-deadline/add-deadline.component';
-import { AssignUserComponent } from '../../components/assign-user/assign-user.component';
 
 @Component({
   selector: 'app-home',
@@ -33,7 +32,7 @@ import { AssignUserComponent } from '../../components/assign-user/assign-user.co
     TaskCardComponent,
     AddCommentComponent,
     AddDeadlineComponent,
-    AssignUserComponent
+    AssignUserComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -160,7 +159,7 @@ export class HomeComponent {
       }
     }
   }
-  
+
   saveTask(event: { task: TaskRequest; taskId: string }) {
     if (this.isTaskUpdate) {
       this.updateTask(event.task, event.taskId);
@@ -184,23 +183,23 @@ export class HomeComponent {
     });
   }
 
-  saveAssignUser(event: {assignedTo: string}) {
+  saveAssignUser(event: { assignedTo: string }) {
     const assignToRequest: AssignToRequest = {
       taskId: this.taskId,
       assignedTo: event.assignedTo,
-    }
+    };
     this.reAssignUser(assignToRequest);
   }
 
   addDeadline(deadline: string) {
-    this.changeTaskStatus(this.taskId, 'open', deadline)
+    this.changeTaskStatus(this.taskId, 'open', deadline);
   }
 
   changeTaskStatus(taskId: string, status: string, deadline?: string): void {
     const taskUpdateStatusRequest: TaskUpdateStatusRequest = {
       taskId,
       status,
-      deadline: deadline ? deadline: null,
+      deadline: deadline ? deadline : null,
     };
     this.updateTaskStatus(taskUpdateStatusRequest, status);
   }
@@ -216,10 +215,11 @@ export class HomeComponent {
   }
 
   private removeTaskFromLists(taskId: string) {
-    [this.todoTasks, this.completedTasks, this.expiredTasks] = 
-      [this.todoTasks, this.completedTasks, this.expiredTasks].map(tasks => 
-        tasks.filter(task => task.taskId !== taskId)
-      );
+    [this.todoTasks, this.completedTasks, this.expiredTasks] = [
+      this.todoTasks,
+      this.completedTasks,
+      this.expiredTasks,
+    ].map((tasks) => tasks.filter((task) => task.taskId !== taskId));
   }
 
   getToken(code: string): void {
@@ -275,7 +275,6 @@ export class HomeComponent {
     });
   }
 
-  
   deleteTask(taskId: string) {
     this.taskService.deleteTask(taskId).subscribe({
       next: () => this.removeTaskFromLists(taskId),
@@ -297,7 +296,6 @@ export class HomeComponent {
       },
     });
   }
-
 
   getAllCreatedTask(): void {
     this.taskService.getAllCreatedTasks().subscribe({
@@ -325,7 +323,10 @@ export class HomeComponent {
     });
   }
 
-  updateTaskStatus(taskUpdateStatusRequest: TaskUpdateStatusRequest, status: string): void {
+  updateTaskStatus(
+    taskUpdateStatusRequest: TaskUpdateStatusRequest,
+    status: string
+  ): void {
     this.taskService.changeTaskStatus(taskUpdateStatusRequest).subscribe({
       next: (task: Task) => {
         if (status === 'completed') {
