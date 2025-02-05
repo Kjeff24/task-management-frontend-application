@@ -25,6 +25,7 @@ export class AddUserComponent {
     this.userForm = this.fb.group({
       email: ['', [Validators.required]],
       fullName: ['', [Validators.required]],
+      role: ['', [Validators.required]]
     });
   }
 

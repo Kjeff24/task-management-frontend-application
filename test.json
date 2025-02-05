@@ -1,0 +1,184 @@
+{
+    "StartAt": "DetermineWorkflow",
+    "States": {
+      "DetermineWorkflow": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "And": [
+              {
+                "Variable": "$.workflowType",
+                "StringEquals": "onboarding"
+              },
+              {
+                "Variable": "$.role",
+                "StringEquals": "USER"
+              }
+            ],
+            "Next": "SubscribeUserToSNS"
+          },
+          {
+            "And": [
+              {
+                "Variable": "$.workflowType",
+                "StringEquals": "onboarding"
+              },
+              {
+                "Variable": "$.role",
+                "StringEquals": "ADMIN"
+              }
+            ],
+            "Next": "SubscribeAdminToSNS"
+          },
+          {
+            "Variable": "$.workflowType",
+            "StringEquals": "taskDeadline",
+            "Next": "HandleTaskDeadline"
+          }
+        ],
+        "Default": "FailState"
+      },
+      "SubscribeUserToSNS": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "SubscribeToTasksAssignmentTopic",
+            "States": {
+              "SubscribeToTasksAssignmentTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${TasksAssignmentNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "SubscribeToTasksDeadlineTopic",
+            "States": {
+              "SubscribeToTasksDeadlineTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${TasksDeadlineNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "SubscribeToClosedTasksTopic",
+            "States": {
+              "SubscribeToClosedTasksTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${ClosedTasksNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "SubscribeToReopenedTasksTopic",
+            "States": {
+              "SubscribeToReopenedTasksTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${ReopenedTasksNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "SuccessState"
+      },
+      "SubscribeAdminToSNS": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "SubscribeAdminToClosedTasksTopic",
+            "States": {
+              "SubscribeAdminToClosedTasksTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${ClosedTasksNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "SubscribeToTaskCompleteTopic",
+            "States": {
+              "SubscribeToTaskCompleteTopic": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SubscribeToSnsLambda}",
+                "Parameters": {
+                  "TopicArn": "${TaskCompleteNotificationTopic}",
+                  "Email.$": "$.userEmail"
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "SuccessState"
+      },
+      "HandleTaskDeadline": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "UpdateTaskStatus",
+            "States": {
+              "UpdateTaskStatus": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdateTaskStatusLambda}",
+                "Parameters": {
+                  "TaskId.$": "$.taskId",
+                  "Status": "Expired"
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "SendDeadlineNotification",
+            "States": {
+              "SendDeadlineNotification": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SendDeadlineNotificationLambda}",
+                "Parameters": {
+                  "TopicArn": "${ClosedTasksNotificationTopic}",
+                  "TaskId.$": "$.taskId",
+                  "UserEmail.$": "$.assignedTo",
+                  "AdminEmail.$": "$.createdBy",
+                  "Deadline.$": "$.deadline"
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "SuccessState"
+      },
+      "SuccessState": {
+        "Type": "Succeed"
+      },
+      "FailState": {
+        "Type": "Fail",
+        "Error": "InvalidWorkflowType",
+        "Cause": "The workflow type provided is not supported."
+      }
+    }
+  }
+

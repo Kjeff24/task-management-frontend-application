@@ -32,6 +32,35 @@
           </div>
         </div>
   
+        <!-- Role field  -->
+        <div>
+          <label
+            for="role"
+            class="block text-sm font-medium text-gray-300 mb-1"
+            >Role</label
+          >
+          <select
+            id="role"
+            formControlName="role"
+            class="w-full p-3 rounded-lg border border-gray-600 bg-1 text-white focus:ring focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="" disabled>Select a role</option>
+            <option value="USER">
+              Team member
+            </option>
+            <option value="ADMIN">
+              Admin
+            </option>
+          </select>
+          <div
+            *ngIf="
+              userForm.get('assignedTo')?.invalid &&
+              userForm.get('assignedTo')?.touched
+            "
+          >
+            <small class="text-red-500 text-sm">Assigned To is required</small>
+          </div>
+        </div>
         <!-- Buttons -->
         <div class="flex justify-between items-center space-x-4">
           <button

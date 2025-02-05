@@ -1,6 +1,7 @@
 export interface UserRequest {
  email: string;
- fullName: string;   
+ fullName: string;
+ role: string;
 }
 
 export interface UserResponse {
